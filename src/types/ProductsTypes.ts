@@ -1,6 +1,11 @@
-type ProductCardProps = {
-  name: string;
-  description: string;
+export type Product = {
+  id: number;
+  name_en: string;
+  name_ar: string;
+  description_en: string;
+  description_ar: string;
   price: number;
-  imageUrl: string;
+  image_url: string;
+  is_available: boolean;
+  created_at: string;
 };

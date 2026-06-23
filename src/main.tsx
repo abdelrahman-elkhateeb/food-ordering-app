@@ -2,10 +2,11 @@ import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 
 import { ThemeProvider } from "@/components/theme-provider.tsx"
-import "./index.css"
-import { RouterProvider } from "react-router-dom"
-import { router } from "./routes/router"
+import { DirectionProvider } from "@/components/ui/direction"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { RouterProvider } from "react-router-dom"
+import "./index.css"
+import { router } from "./routes/router"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,10 +18,12 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-      </QueryClientProvider>
-    </ThemeProvider>
+    <DirectionProvider direction="rtl">
+      <ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </ThemeProvider>
+    </DirectionProvider>
   </StrictMode>
 )

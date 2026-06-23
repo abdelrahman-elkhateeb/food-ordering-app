@@ -1,18 +1,31 @@
-import { useProducts } from "@/features/products/useProducts";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useProducts } from "@/features/products/useProducts";
+import { useCartStore } from "@/store/cartStore";
+import type { CartItem } from "@/types/CartTypes";
 import Loading from "../MenuLoading";
 
 type Language = "en" | "ar";
 
 export default function MenuCard() {
   const { data: products, isPending, error } = useProducts();
+  const addToCart = useCartStore(state => state.addToCart);
 
   const language: Language = "en";
+
+  const handleAddToCart = (product: CartItem) => {
+    addToCart({
+      id: product.id,
+      name_en: product.name_en,
+      name_ar: product.name_ar,
+      price: product.price,
+      image_url: product.image_url,
+    });
+  };
 
   if (isPending) return <Loading />;
 
@@ -56,7 +69,10 @@ export default function MenuCard() {
                 ${product.price}
               </span>
 
-              <Button>
+              <Button
+                disabled={!product.is_available}
+                onClick={() => handleAddToCart(product)}
+              >
                 Add to Cart
               </Button>
             </CardFooter>
