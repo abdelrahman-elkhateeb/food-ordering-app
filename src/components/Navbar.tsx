@@ -1,4 +1,4 @@
-import { Globe, ShoppingCart } from "lucide-react";
+import { Globe, ShoppingCart, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import {
@@ -9,10 +9,23 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/features/users/useUser";
 import { useCartStore } from "@/store/cartStore";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+
+import { useLogout } from "@/features/users/useLogout";
+import { LogOut } from "lucide-react";
 
 export default function Navbar() {
   const totalItems = useCartStore((state) => state.getTotalItems());
+  const { user } = useUser();
+  const { logoutUser } = useLogout();
 
   return (
     <header className="border-b bg-background">
@@ -64,11 +77,31 @@ export default function Navbar() {
             </Link>
           </Button>
 
-          <Button asChild>
-            <Link to="/login">
-              Login
-            </Link>
-          </Button>
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => logoutUser()}
+                  className="text-destructive"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button asChild>
+              <Link to="/login">
+                Login
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </header>
