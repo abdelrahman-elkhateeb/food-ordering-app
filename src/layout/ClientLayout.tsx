@@ -1,9 +1,10 @@
+import Navbar from "@/components/Navbar";
 import { Outlet } from "react-router-dom";
 
 export default function ClientLayout() {
   return (
     <>
-      <h1>Navbar</h1>
+      <Navbar />
 
       <Outlet />
 
