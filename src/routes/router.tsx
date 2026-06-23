@@ -1,4 +1,5 @@
 import AdminLayout from "@/layout/AdminLayout";
+import AuthLayout from "@/layout/AuthLayout";
 import ClientLayout from "@/layout/ClientLayout";
 import AdminDashboard from "@/pages/Admin/AdminDashboard";
 import AdminOrders from "@/pages/Admin/AdminOrders";
@@ -9,6 +10,7 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Menu from "@/pages/Menu";
 import NotFound from "@/pages/NotFound";
+import Register from "@/pages/Register";
 import TrackOrder from "@/pages/TrackOrder";
 import { createBrowserRouter } from "react-router-dom";
 
@@ -21,7 +23,6 @@ export const router = createBrowserRouter([
       { path: "menu", element: <Menu /> },
       { path: "checkout", element: <Checkout /> },
       { path: "track-order", element: <TrackOrder /> },
-      { path: "login", element: <Login /> },
       { path: "cart", element: <Cart /> },
     ]
   },
@@ -33,6 +34,13 @@ export const router = createBrowserRouter([
       { path: "products", element: <AdminProducts /> },
       { path: "orders", element: <AdminOrders /> },
     ]
+  },
+  {
+    element: <AuthLayout />,
+    children: [
+      { path: "/login", element: <Login /> },
+      { path: "/register", element: <Register /> },
+    ],
   },
   {
     path: "*",
