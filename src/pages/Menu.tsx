@@ -1,6 +1,9 @@
+import MenuCard from "@/components/menu/MenuCard";
 
 export default function Menu() {
   return (
-    <div>Menu</div>
+    <div>
+      <MenuCard />
+    </div>
   )
 }
