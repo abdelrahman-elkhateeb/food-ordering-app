@@ -6,41 +6,44 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import type { Product } from "@/types/ProductsTypes";
-import { useCreateProduct } from "@/features/products/useCreateProduct";
-
+import { useUpdateProduct } from "@/features/products/useUpdateProduct";
 
 type ProductFormValues = Omit<Product, "id" | "created_at">;
 
-type AddProductFormProps = {
+type AdminUpdateProductFormProps = {
+  product: Product;
   onSuccess?: () => void;
 };
 
-export default function AdminAddProductForm({
-  onSuccess,
-}: AddProductFormProps) {
-  const { createProduct, isCreating } = useCreateProduct();
+export default function AdminUpdateProductForm({
+  product,
+}: AdminUpdateProductFormProps) {
+  const { updateProduct, isUpdating } = useUpdateProduct();
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
-    reset,
     formState: { errors },
   } = useForm<ProductFormValues>({
     defaultValues: {
-      is_available: true,
+      name_en: product.name_en,
+      name_ar: product.name_ar,
+      description_en: product.description_en,
+      description_ar: product.description_ar,
+      price: product.price,
+      image_url: product.image_url,
+      is_available: product.is_available,
     },
   });
 
   const isAvailable = watch("is_available");
 
   function onSubmit(data: ProductFormValues) {
-    createProduct(data, {
-      onSuccess: () => {
-        reset();
-        onSuccess?.();
-      },
+    updateProduct({
+      id: product.id,
+      product: data,
     });
   }
 
@@ -51,7 +54,7 @@ export default function AdminAddProductForm({
           <Field>
             <FieldLabel>Name EN</FieldLabel>
             <Input
-              disabled={isCreating}
+              disabled={isUpdating}
               {...register("name_en", {
                 required: "English name is required",
               })}
@@ -67,7 +70,7 @@ export default function AdminAddProductForm({
             <FieldLabel>Name AR</FieldLabel>
             <Input
               dir="rtl"
-              disabled={isCreating}
+              disabled={isUpdating}
               {...register("name_ar", {
                 required: "Arabic name is required",
               })}
@@ -83,7 +86,7 @@ export default function AdminAddProductForm({
         <Field>
           <FieldLabel>Description EN</FieldLabel>
           <Textarea
-            disabled={isCreating}
+            disabled={isUpdating}
             {...register("description_en", {
               required: "English description is required",
             })}
@@ -94,7 +97,7 @@ export default function AdminAddProductForm({
           <FieldLabel>Description AR</FieldLabel>
           <Textarea
             dir="rtl"
-            disabled={isCreating}
+            disabled={isUpdating}
             {...register("description_ar", {
               required: "Arabic description is required",
             })}
@@ -106,7 +109,7 @@ export default function AdminAddProductForm({
           <Input
             type="number"
             step="0.01"
-            disabled={isCreating}
+            disabled={isUpdating}
             {...register("price", {
               required: "Price is required",
               valueAsNumber: true,
@@ -127,7 +130,7 @@ export default function AdminAddProductForm({
           <FieldLabel>Image URL</FieldLabel>
           <Input
             type="url"
-            disabled={isCreating}
+            disabled={isUpdating}
             placeholder="https://example.com/product.jpg"
             {...register("image_url", {
               required: "Image URL is required",
@@ -150,15 +153,15 @@ export default function AdminAddProductForm({
 
           <Switch
             checked={isAvailable}
-            disabled={isCreating}
+            disabled={isUpdating}
             onCheckedChange={(checked) =>
               setValue("is_available", checked)
             }
           />
         </Field>
 
-        <Button type="submit" disabled={isCreating} className="w-full">
-          {isCreating ? "Creating..." : "Create Product"}
+        <Button type="submit" disabled={isUpdating} className="w-full">
+          {isUpdating ? "Updating..." : "Update Product"}
         </Button>
       </FieldGroup>
     </form>

@@ -39,10 +39,15 @@ export async function createProduct(product: Product) {
   return data;
 }
 
-export async function updateProduct(
-  product: Product,
-  id: number
-) {
+type ProductFormValues = Omit<Product, "id" | "created_at">;
+
+export async function updateProduct({
+  id,
+  product,
+}: {
+  id: number;
+  product: ProductFormValues;
+}) {
   const { data, error } = await supabase
     .from("products")
     .update(product)
@@ -50,9 +55,7 @@ export async function updateProduct(
     .select()
     .single();
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
 
   return data;
 }

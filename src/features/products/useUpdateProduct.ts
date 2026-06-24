@@ -1,22 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import type { Product } from "@/types/ProductsTypes";
 import { updateProduct as updateProductApi } from "@/services/apiProducts";
 
 export function useUpdateProduct() {
   const queryClient = useQueryClient();
 
-  const {
-    isPending: isUpdating,
-    mutate: updateProduct,
-  } = useMutation({
-    mutationFn: ({
-      newProduct,
-      id,
-    }: {
-      newProduct: Product;
-      id: number;
-      }) => updateProductApi(newProduct, id),
+  const { mutate: updateProduct, isPending: isUpdating } = useMutation({
+    mutationFn: updateProductApi,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -29,8 +19,5 @@ export function useUpdateProduct() {
     },
   });
 
-  return {
-    isUpdating,
-    updateProduct,
-  };
+  return { updateProduct, isUpdating };
 }

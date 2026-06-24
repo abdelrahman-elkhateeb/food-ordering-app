@@ -23,86 +23,123 @@ import {
 import { useProducts } from "@/features/products/useProducts";
 import { useDeleteProduct } from "@/features/products/useDeleteProduct";
 import { MoreHorizontal } from "lucide-react";
+import { useState } from "react";
+import type { Product } from "@/types/ProductsTypes";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import AdminUpdateProductForm from "./AdminUpdateProductForm";
 
 
 export default function AdminProductTable() {
   const { data: products, isPending: isProductLoading, error } = useProducts();
   const { deleteProduct, isDeleting } = useDeleteProduct();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  function handleEdit(product: Product) {
+    setSelectedProduct(product);
+    setIsEditOpen(true);
+  }
 
   if (isProductLoading && isDeleting) return <p>Loading...</p>;
 
   if (error) return <p>Something went wrong.</p>;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Menu Products</CardTitle>
-      </CardHeader>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Menu Products</CardTitle>
+        </CardHeader>
 
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="w-[80px]" />
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {products?.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={product.image_url}
-                      alt={product.name_en}
-                      className="h-12 w-12 rounded-md object-cover"
-                    />
-
-                    <div>
-                      <p className="font-medium">{product.name_en}</p>
-                      <p className="text-sm text-muted-foreground">
-                        ID: {product.id}
-                      </p>
-                    </div>
-                  </div>
-                </TableCell>
-
-                <TableCell>{product.price} EGP</TableCell>
-
-                <TableCell>
-                  <Badge
-                    variant={
-                      product.is_available ? "default" : "secondary"
-                    }
-                  >
-                    {product.is_available ? "available" : "unavailable"}
-                  </Badge>
-                </TableCell>
-
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent >
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive" onClick={() => deleteProduct(product.id)}>
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Product</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="w-[80px]" />
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+            </TableHeader>
+
+            <TableBody>
+              {products?.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={product.image_url}
+                        alt={product.name_en}
+                        className="h-12 w-12 rounded-md object-cover"
+                      />
+
+                      <div>
+                        <p className="font-medium">{product.name_en}</p>
+                        <p className="text-sm text-muted-foreground">
+                          ID: {product.id}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  <TableCell>{product.price} EGP</TableCell>
+
+                  <TableCell>
+                    <Badge
+                      variant={
+                        product.is_available ? "default" : "secondary"
+                      }
+                    >
+                      {product.is_available ? "available" : "unavailable"}
+                    </Badge>
+                  </TableCell>
+
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+
+                      <DropdownMenuContent >
+                        <DropdownMenuItem
+                          onClick={() => handleEdit(product)}
+                        >
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive" onClick={() => deleteProduct(product.id)}>
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <Dialog
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Edit Product</DialogTitle>
+            <DialogDescription>
+              Update product information.
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedProduct && (
+            <AdminUpdateProductForm
+              product={selectedProduct}
+              onSuccess={() => setIsEditOpen(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
