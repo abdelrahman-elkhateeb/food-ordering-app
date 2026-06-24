@@ -11,3 +11,14 @@ export async function getProducts() {
 
   return data;
 }
+
+export async function deleteProduct(productId: string) {
+  const { error } = await supabase
+    .from('products')
+    .delete()
+    .eq("id", productId)
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}

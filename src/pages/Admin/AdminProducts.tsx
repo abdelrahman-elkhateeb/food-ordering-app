@@ -23,11 +23,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useProducts } from "@/features/products/useProducts";
+import { useDeleteProduct } from "@/features/products/useDeleteProduct";
 
 export default function AdminProducts() {
   const { data: products, isPending: isProductLoading, error } = useProducts();
+  const { deleteProduct, isDeleting } = useDeleteProduct();
 
-  if (isProductLoading) return <p>Loading...</p>;
+  if (isProductLoading && isDeleting) return <p>Loading...</p>;
 
   if (error) return <p>Something went wrong.</p>;
 
@@ -105,7 +107,7 @@ export default function AdminProducts() {
 
                       <DropdownMenuContent >
                         <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">
+                        <DropdownMenuItem className="text-destructive" onClick={() => deleteProduct(product.id)}>
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
