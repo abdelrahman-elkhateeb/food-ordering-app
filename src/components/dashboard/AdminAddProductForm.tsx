@@ -9,8 +9,6 @@ import type { Product } from "@/types/ProductsTypes";
 import { useCreateProduct } from "@/features/products/useCreateProduct";
 
 
-type ProductFormValues = Omit<Product, "id" | "created_at">;
-
 type AddProductFormProps = {
   onSuccess?: () => void;
 };
@@ -27,7 +25,7 @@ export default function AdminAddProductForm({
     watch,
     reset,
     formState: { errors },
-  } = useForm<ProductFormValues>({
+  } = useForm<Product>({
     defaultValues: {
       is_available: true,
     },
@@ -35,7 +33,7 @@ export default function AdminAddProductForm({
 
   const isAvailable = watch("is_available");
 
-  function onSubmit(data: ProductFormValues) {
+  function onSubmit(data: Product) {
     createProduct(data, {
       onSuccess: () => {
         reset();
