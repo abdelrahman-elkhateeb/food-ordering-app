@@ -1,155 +1,326 @@
-# 🍔 Foodie - Restaurant Ordering & Management System
+# 🍔 Foodie - Full Stack Food Ordering Platform
 
-A full-stack restaurant ordering platform built with modern React tools and Supabase.
+A modern full-stack food ordering platform built with React, TypeScript, Supabase, TanStack Query, Zustand, and shadcn/ui.
 
-The project consists of two main applications:
-
-* **Client Application** — Browse menu items, add products to cart, place orders, and track order status.
-* **Admin Dashboard** — Manage products, monitor orders, and update delivery statuses in real time.
+The application allows customers to browse products, place orders, track order status, and manage their cart, while administrators can manage products and monitor orders through a dedicated dashboard.
 
 ---
 
-## ✨ Features
+## 🚀 Features
 
-### Customer Side
+### 👤 Authentication
 
-* Browse restaurant menu
-* Multi-language product support (English / Arabic)
-* Shopping cart powered by Zustand
-* Checkout flow
-* Order tracking page
-* Authentication with Supabase Auth
-* Responsive design for mobile and desktop
-
-### Admin Dashboard
-
-* View all orders
-* Update order status:
-
-  * Pending
-  * Preparing
-  * Out For Delivery
-  * Delivered
-* Full product management
-
-  * Create products
-  * Update products
-  * Delete products
-* Product availability control
+- User Registration
+- User Login
+- Secure Session Management using Supabase Auth
+- Protected User Actions
+- Logout Functionality
 
 ---
 
-## 🛠 Tech Stack
+### 🍕 Customer Experience
+
+#### Menu
+
+- Browse available food items
+- Product images and descriptions
+- Multi-language support (English / Arabic)
+- Product availability status
+
+#### Shopping Cart
+
+- Add products to cart
+- Remove products from cart
+- Increase / decrease quantity
+- Persistent client-side state using Zustand
+- Automatic subtotal and total calculations
+
+#### Checkout
+
+- Customer information collection
+- Payment method selection
+- Order summary
+- Order creation workflow
+
+#### Order Tracking
+
+Customers can track their orders using the order ID.
+
+Supported statuses:
+
+- Pending
+- Preparing
+- Out For Delivery
+- Delivered
+
+Includes a visual order progress tracker that updates automatically based on the current order status.
+
+---
+
+### 🌍 Multi-Language Support
+
+Built using i18next.
+
+#### Supported Languages
+
+- English 🇺🇸
+- Arabic 🇪🇬
+
+#### Features
+
+- Dynamic language switching
+- Persistent language preference
+- RTL support
+- Localized UI content
+
+---
+
+### 🛠 Admin Dashboard
+
+A dedicated dashboard for restaurant management.
+
+#### Products Management
+
+- Create products
+- Edit products
+- Delete products
+- Toggle product availability
+
+#### Orders Management
+
+- View all orders
+- View order details
+- Update order status
+
+Order workflow:
+
+```txt
+Pending
+↓
+Preparing
+↓
+Out For Delivery
+↓
+Delivered
+```
+
+---
+
+## 🏗 Architecture
+
+The project follows a feature-based architecture.
+
+```txt
+src
+│
+├── components
+├── pages
+├── routes
+├── services
+├── store
+├── types
+│
+├── features
+│   ├── products
+│   ├── orders
+│   └── users
+│
+└── lib
+```
+
+This structure improves scalability, maintainability, and separation of concerns.
+
+---
+
+## ⚡ State Management
+
+### Client State
+
+Managed using Zustand.
+
+Examples:
+
+- Shopping Cart
+- Local UI State
+- User Preferences
+
+### Server State
+
+Managed using TanStack Query.
+
+Examples:
+
+- Products
+- Orders
+- Authentication Data
+
+Benefits:
+
+- Request caching
+- Automatic refetching
+- Built-in loading and error states
+- Better server state management
+
+---
+
+## 🎨 UI & Design
+
+Built entirely using:
+
+- shadcn/ui
+- Radix UI
+- Tailwind CSS
+
+Features:
+
+- Responsive Layout
+- Accessible Components
+- Modern Dashboard Design
+- Reusable UI Components
+- Mobile Friendly Experience
+
+---
+
+## 🗄 Database
+
+Powered by Supabase.
+
+### Products Table
+
+```txt
+id
+name_en
+name_ar
+description_en
+description_ar
+price
+image_url
+is_available
+created_at
+```
+
+### Orders Table
+
+```txt
+id
+customer_name
+phone
+address
+payment_method
+status
+total_price
+created_at
+```
+
+### Order Items Table
+
+```txt
+id
+order_id
+product_id
+quantity
+price
+```
+
+---
+
+## 🔐 Authentication
+
+Powered by Supabase Authentication.
+
+Features:
+
+- Email & Password Registration
+- User Login
+- Session Persistence
+- Secure Authentication Flow
+
+---
+
+## 🧰 Tech Stack
 
 ### Frontend
 
-* React
-* TypeScript
-* Vite
-* React Router
-* Tailwind CSS
-* shadcn/ui
-* React Hook Form
-* Zustand
-* TanStack Query
+- React
+- TypeScript
+- React Router DOM
+- TanStack Query
+- Zustand
 
-### Backend & Database
+### Styling
 
-* Supabase
+- Tailwind CSS
+- shadcn/ui
+- Radix UI
 
-  * Authentication
-  * PostgreSQL Database
-  * Row Level Security
+### Backend Services
 
----
+- Supabase
 
-## 📦 Database Tables
+### Authentication
 
-### Products
+- Supabase Auth
 
-* id
-* name_en
-* name_ar
-* description_en
-* description_ar
-* image_url
-* price
-* is_available
-* created_at
+### Database
 
-### Orders
+- PostgreSQL (Supabase)
 
-* id
-* customer_name
-* phone
-* address
-* status
-* payment_method
-* total_price
-* created_at
+### Internationalization
 
-### Order Items
-
-* id
-* order_id
-* product_id
-* quantity
-* price
+- i18next
+- react-i18next
 
 ---
 
-## 🚀 Getting Started
+## 📈 What This Project Demonstrates
 
-### Clone Repository
+This project showcases:
 
-```bash
-git clone <repo-url>
-cd foodie
-```
-
-### Install Dependencies
-
-```bash
-npm install
-```
-
-### Environment Variables
-
-Create a `.env` file:
-
-```env
-VITE_SUPABASE_URL=YOUR_SUPABASE_URL
-VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
-```
-
-### Start Development Server
-
-```bash
-npm run dev
-```
-
----
-
-## 🎯 What I Practiced
-
-* Scalable React project architecture
-* State management with Zustand
-* Server state management with TanStack Query
-* Form handling with React Hook Form
-* Authentication with Supabase
-* CRUD operations
-* Admin dashboard development
-* Real-world API integration
-* Role-based application structure
+- Modern React Architecture
+- Feature-Based Folder Structure
+- Authentication Workflows
+- CRUD Operations
+- Dashboard Development
+- State Management Best Practices
+- Client vs Server State Separation
+- Multi-Language Applications
+- Responsive Design
+- Real-World Order Management Systems
+- Supabase Integration
+- Production-Oriented Frontend Development
 
 ---
 
 ## 📸 Screenshots
 
-Add screenshots here.
-<img width="1898" height="931" alt="Screenshot 2026-06-24 063302" src="https://github.com/user-attachments/assets/3e3908ce-5150-4c00-9d97-c20127c69c50" />
-<img width="1900" height="935" alt="Screenshot 2026-06-24 063247" src="https://github.com/user-attachments/assets/60f99798-9bc3-427b-8da0-5e10a18e05c5" />
-<img width="1905" height="931" alt="Screenshot 2026-06-24 063228" src="https://github.com/user-attachments/assets/8b0aee53-39e0-4b75-b1a3-ea839cfefa35" />
+<img width="1915" height="936" alt="AdminProductPage" src="https://github.com/user-attachments/assets/95c06350-2f4b-4a99-aaee-c7654a35d67d" />
+<img width="1900" height="950" alt="menu" src="https://github.com/user-attachments/assets/9d6eb4b9-f46e-42b2-a0d3-c96f3cabb1e5" />
+<img width="1899" height="942" alt="track-order" src="https://github.com/user-attachments/assets/babd238b-b7e9-4512-a22e-b50ed325e1ec" />
+<img width="1912" height="940" alt="checkout" src="https://github.com/user-attachments/assets/90c7b292-bd6c-42c7-b57a-a84d04a8aa1f" />
 
+
+---
+
+## 🏃 Running Locally
+
+```bash
+# Clone repository
+git clone <repository-url>
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### Environment Variables
+
+Create a `.env` file and add:
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
 ---
