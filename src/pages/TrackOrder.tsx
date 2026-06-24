@@ -56,6 +56,7 @@ export default function TrackOrder() {
 
   const { order, isLoading, error } = useOrder(orderId);
 
+
   const hasSearched = orderId !== "";
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -141,8 +142,8 @@ export default function TrackOrder() {
                       <div className="flex flex-col items-center">
                         <div
                           className={`flex h-10 w-10 items-center justify-center rounded-full border ${active
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted text-muted-foreground"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground"
                             }`}
                         >
                           <Icon className="h-5 w-5" />
