@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { CreditCard, Banknote } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCartStore } from "@/store/cartStore";
 
 export default function Checkout() {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
+
   const cart = useCartStore((state) => state.cart);
   const totalItems = useCartStore((state) => state.getTotalItems());
   const totalPrice = useCartStore((state) => state.getTotalPrice());
@@ -24,9 +28,10 @@ export default function Checkout() {
   if (cart.length === 0) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
-        <h1 className="text-2xl font-bold">Your cart is empty</h1>
+        <h1 className="text-2xl font-bold">{t("cart.empty")}</h1>
+
         <Button asChild>
-          <Link to="/menu">Back to Menu</Link>
+          <Link to="/menu">{t("checkout.backToMenu")}</Link>
         </Button>
       </div>
     );
@@ -34,37 +39,40 @@ export default function Checkout() {
 
   return (
     <section className="py-8">
-      <h1 className="mb-6 text-3xl font-bold">Checkout</h1>
+      <h1 className="mb-6 text-3xl font-bold">{t("checkout.title")}</h1>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <Card>
           <CardHeader>
-            <CardTitle>Delivery Details</CardTitle>
+            <CardTitle>{t("checkout.deliveryDetails")}</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="customerName">Full Name</Label>
-              <Input id="customerName" placeholder="Ahmed Mohamed" />
+              <Label htmlFor="customerName">{t("checkout.fullName")}</Label>
+              <Input
+                id="customerName"
+                placeholder={t("checkout.fullNamePlaceholder")}
+              />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" placeholder="01012345678" />
+              <Label htmlFor="phone">{t("checkout.phoneNumber")}</Label>
+              <Input id="phone" placeholder={t("checkout.phonePlaceholder")} />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="address">Address</Label>
+              <Label htmlFor="address">{t("checkout.address")}</Label>
               <Textarea
                 id="address"
-                placeholder="Street, building, apartment, city"
+                placeholder={t("checkout.addressPlaceholder")}
               />
             </div>
 
             <Separator />
 
             <div className="space-y-3">
-              <Label>Payment Method</Label>
+              <Label>{t("checkout.paymentMethod")}</Label>
 
               <RadioGroup defaultValue="cash" className="grid gap-3 sm:grid-cols-2">
                 <Label
@@ -73,7 +81,7 @@ export default function Checkout() {
                 >
                   <RadioGroupItem value="cash" id="cash" />
                   <Banknote className="h-5 w-5" />
-                  Cash
+                  {t("checkout.cash")}
                 </Label>
 
                 <Label
@@ -82,7 +90,7 @@ export default function Checkout() {
                 >
                   <RadioGroupItem value="online" id="online" />
                   <CreditCard className="h-5 w-5" />
-                  Online
+                  {t("checkout.online")}
                 </Label>
               </RadioGroup>
             </div>
@@ -91,36 +99,47 @@ export default function Checkout() {
 
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle>Order Summary</CardTitle>
+            <CardTitle>{t("checkout.orderSummary")}</CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              {cart.map((item) => (
-                <div key={item.id} className="flex justify-between gap-4 text-sm">
-                  <span>
-                    {item.name_en} × {item.quantity}
-                  </span>
-                  <span>${item.price * item.quantity}</span>
-                </div>
-              ))}
+              {cart.map((item) => {
+                const name = isArabic ? item.name_ar : item.name_en;
+
+                return (
+                  <div
+                    key={item.id}
+                    className="flex justify-between gap-4 text-sm"
+                  >
+                    <span>
+                      {name} × {item.quantity}
+                    </span>
+                    <span>
+                      {item.price * item.quantity} {t("common.currency")}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
             <Separator />
 
             <div className="flex justify-between">
-              <span>Items</span>
+              <span>{t("checkout.items")}</span>
               <span>{totalItems}</span>
             </div>
 
             <div className="flex justify-between text-lg font-bold">
-              <span>Total</span>
-              <span>${totalPrice}</span>
+              <span>{t("checkout.total")}</span>
+              <span>
+                {totalPrice} {t("common.currency")}
+              </span>
             </div>
           </CardContent>
 
           <CardFooter>
-            <Button className="w-full">Place Order</Button>
+            <Button className="w-full">{t("checkout.placeOrder")}</Button>
           </CardFooter>
         </Card>
       </div>
