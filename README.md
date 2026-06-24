@@ -147,7 +147,7 @@ npm run dev
 ## 📸 Screenshots
 
 Add screenshots here.
-![Uploading Screenshot 2026-06-24 063302.png…]()
+<img width="1898" height="931" alt="Screenshot 2026-06-24 063302" src="https://github.com/user-attachments/assets/3e3908ce-5150-4c00-9d97-c20127c69c50" />
 <img width="1900" height="935" alt="Screenshot 2026-06-24 063247" src="https://github.com/user-attachments/assets/60f99798-9bc3-427b-8da0-5e10a18e05c5" />
 <img width="1905" height="931" alt="Screenshot 2026-06-24 063228" src="https://github.com/user-attachments/assets/8b0aee53-39e0-4b75-b1a3-ea839cfefa35" />
 
