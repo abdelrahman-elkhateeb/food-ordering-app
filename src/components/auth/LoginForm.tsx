@@ -33,7 +33,12 @@ export function LoginForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormValues>();
+  } = useForm<LoginFormValues>({
+    defaultValues: {
+      email: "user@gmail.com",
+      password: "12345678",
+    },
+  });
 
   function onSubmit(data: LoginFormValues) {
     loginUser(data);
