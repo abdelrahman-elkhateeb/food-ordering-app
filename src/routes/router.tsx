@@ -10,6 +10,7 @@ import Home from "@/pages/Home";
 import Login from "@/pages/Login";
 import Menu from "@/pages/Menu";
 import NotFound from "@/pages/NotFound";
+import OrderConfirmed from "@/pages/OrderConfirmed";
 import Register from "@/pages/Register";
 import TrackOrder from "@/pages/TrackOrder";
 import { createBrowserRouter } from "react-router-dom";
@@ -24,6 +25,7 @@ export const router = createBrowserRouter([
       { path: "checkout", element: <Checkout /> },
       { path: "track-order", element: <TrackOrder /> },
       { path: "cart", element: <Cart /> },
+      { path: "order-confirmed/:orderId", element: <OrderConfirmed /> },
     ]
   },
   {
