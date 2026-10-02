@@ -16,7 +16,8 @@ import { Input } from "@/components/ui/input";
 import { useRegister } from "@/features/users/useRegister";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
 type RegisterFormValues = {
   email: string;
@@ -30,11 +31,12 @@ export function RegisterForm({
   ...props
 }: React.ComponentProps<"div">) {
   const { signupUser, isLoading } = useRegister();
+  const { t } = useTranslation();
 
   const {
     register,
     handleSubmit,
-    watch,
+    getValues,
     formState: { errors },
   } = useForm<RegisterFormValues>();
 
@@ -50,23 +52,23 @@ export function RegisterForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Create an account</CardTitle>
-          <CardDescription>
-            Register to start ordering delicious food
-          </CardDescription>
+          <CardTitle className="text-xl">{t("auth.registerTitle")}</CardTitle>
+          <CardDescription>{t("auth.registerSubtitle")}</CardDescription>
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
+                <FieldLabel htmlFor="fullName">{t("auth.fullName")}</FieldLabel>
                 <Input
                   id="fullName"
                   type="text"
-                  placeholder="Ahmed Mohamed"
+                  autoComplete="name"
+                  placeholder={t("auth.fullNamePlaceholder")}
+                  aria-invalid={!!errors.fullName}
                   {...register("fullName", {
-                    required: "Full name is required",
+                    required: t("auth.fullNameRequired"),
                   })}
                 />
                 {errors.fullName && (
@@ -77,13 +79,16 @@ export function RegisterForm({
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <FieldLabel htmlFor="email">{t("auth.email")}</FieldLabel>
                 <Input
                   id="email"
                   type="email"
+                  dir="ltr"
+                  autoComplete="email"
                   placeholder="m@example.com"
+                  aria-invalid={!!errors.email}
                   {...register("email", {
-                    required: "Email is required",
+                    required: t("auth.emailRequired"),
                   })}
                 />
                 {errors.email && (
@@ -94,15 +99,18 @@ export function RegisterForm({
               </Field>
 
               <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password">{t("auth.password")}</FieldLabel>
                 <Input
                   id="password"
                   type="password"
+                  dir="ltr"
+                  autoComplete="new-password"
+                  aria-invalid={!!errors.password}
                   {...register("password", {
-                    required: "Password is required",
+                    required: t("auth.passwordRequired"),
                     minLength: {
                       value: 6,
-                      message: "Password must be at least 6 characters",
+                      message: t("auth.passwordMin"),
                     },
                   })}
                 />
@@ -115,16 +123,19 @@ export function RegisterForm({
 
               <Field>
                 <FieldLabel htmlFor="confirmPassword">
-                  Confirm Password
+                  {t("auth.confirmPassword")}
                 </FieldLabel>
                 <Input
                   id="confirmPassword"
                   type="password"
+                  dir="ltr"
+                  autoComplete="new-password"
+                  aria-invalid={!!errors.confirmPassword}
                   {...register("confirmPassword", {
-                    required: "Please confirm your password",
+                    required: t("auth.confirmRequired"),
                     validate: (value) =>
-                      value === watch("password") ||
-                      "Passwords do not match",
+                      value === getValues("password") ||
+                      t("auth.passwordMismatch"),
                   })}
                 />
                 {errors.confirmPassword && (
@@ -136,16 +147,18 @@ export function RegisterForm({
 
               <Field>
                 <Button type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? "Creating account..." : "Create Account"}
+                  {isLoading
+                    ? t("auth.creatingAccount")
+                    : t("auth.createAccount")}
                 </Button>
 
                 <FieldDescription className="text-center">
-                  Already have an account?{" "}
+                  {t("auth.haveAccount")}{" "}
                   <Link
                     to="/login"
                     className="font-medium underline underline-offset-4"
                   >
-                    Login
+                    {t("auth.login")}
                   </Link>
                 </FieldDescription>
               </Field>

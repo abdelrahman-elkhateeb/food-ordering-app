@@ -22,15 +22,11 @@ export async function signup({
   return data;
 }
 
-export async function login({
-  email,
-  password,
-}: LoginCredentials) {
-  const { data, error } =
-    await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+export async function login({ email, password }: LoginCredentials) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) throw new Error(error.message);
 
@@ -47,6 +43,19 @@ export async function getCurrentUser() {
   if (error) throw new Error(error.message);
 
   return data?.user;
+}
+
+export async function getIsAdmin(userId: string) {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
+
+  // Before the migration runs there is no profiles table: treat as non-admin.
+  if (error) return false;
+
+  return data?.role === "admin";
 }
 
 export async function logout() {

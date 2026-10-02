@@ -1,10 +1,22 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>vite-app</title>
+    <meta
+      name="description"
+      content="Foodie: a bilingual food ordering app with live order tracking and an admin dashboard, built with React and Supabase."
+    />
+    <title>Foodie · Order food online</title>
+    <script>
+      // Apply the saved language direction before first paint (no RTL flash).
+      try {
+        var lang = localStorage.getItem("language") || "en";
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { CreditCard, Banknote } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +17,20 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { useCartStore } from "@/store/cartStore";
+import { useCartItems } from "@/features/cart/useCartItems";
 import { useCreateOrder } from "@/features/orders/useCreateOrder";
 import { useUser } from "@/features/users/useUser";
+import { formatPrice } from "@/lib/format";
+import type { PaymentMethod } from "@/types/OrderTypes";
+
+type CheckoutFormValues = {
+  customer_name: string;
+  phone: string;
+  address: string;
+  payment_method: PaymentMethod;
+};
+
+const EGYPTIAN_MOBILE = /^01[0125][0-9]{8}$/;
 
 export default function Checkout() {
   const { t, i18n } = useTranslation();
@@ -28,31 +40,32 @@ export default function Checkout() {
   const { user } = useUser();
   const { createNewOrder, isCreatingOrder } = useCreateOrder();
 
-  const cart = useCartStore((state) => state.cart);
   const clearCart = useCartStore((state) => state.clearCart);
-  const totalItems = useCartStore((state) => state.getTotalItems());
-  const totalPrice = useCartStore((state) => state.getTotalPrice());
+  const { availableItems, totalItems, totalPrice } = useCartItems();
 
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "online">("cash");
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<CheckoutFormValues>({
+    values: {
+      customer_name: user?.user_metadata?.full_name ?? "",
+      phone: "",
+      address: "",
+      payment_method: "cash",
+    },
+    resetOptions: { keepDirtyValues: true },
+  });
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-
-    const customer_name = formData.get("customer_name") as string;
-    const phone = formData.get("phone") as string;
-    const address = formData.get("address") as string;
-
+  function onSubmit(data: CheckoutFormValues) {
     createNewOrder(
       {
-        customer_name,
-        phone,
-        address,
-        payment_method: paymentMethod,
-        total_price: totalPrice,
-        cart,
-        user_id: user?.id ?? null,
+        ...data,
+        items: availableItems.map((item) => ({
+          product_id: item.id,
+          quantity: item.quantity,
+        })),
       },
       {
         onSuccess: (order) => {
@@ -63,7 +76,7 @@ export default function Checkout() {
     );
   }
 
-  if (cart.length === 0) {
+  if (availableItems.length === 0) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
         <h1 className="text-2xl font-bold">{t("cart.empty")}</h1>
@@ -76,9 +89,13 @@ export default function Checkout() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <section className="py-8">
-        <h1 className="mb-6 text-3xl font-bold">{t("checkout.title")}</h1>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
+      <section className="py-10">
+        <h1 className="mb-6 text-3xl font-black">{t("checkout.title")}</h1>
+
+        <p className="mb-6 border-s-2 border-primary bg-primary/10 p-3 text-sm">
+          {t("checkout.demoNotice")}
+        </p>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
           <Card>
@@ -91,30 +108,63 @@ export default function Checkout() {
                 <Label htmlFor="customerName">{t("checkout.fullName")}</Label>
                 <Input
                   id="customerName"
-                  name="customer_name"
+                  autoComplete="name"
                   placeholder={t("checkout.fullNamePlaceholder")}
-                  required
+                  aria-invalid={!!errors.customer_name}
+                  {...register("customer_name", {
+                    validate: (value) =>
+                      !!value.trim() || t("checkout.fullNameRequired"),
+                  })}
                 />
+                {errors.customer_name && (
+                  <p className="text-sm text-destructive">
+                    {errors.customer_name.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="phone">{t("checkout.phoneNumber")}</Label>
                 <Input
                   id="phone"
-                  name="phone"
+                  type="tel"
+                  dir="ltr"
+                  inputMode="numeric"
+                  autoComplete="tel"
                   placeholder={t("checkout.phonePlaceholder")}
-                  required
+                  aria-invalid={!!errors.phone}
+                  {...register("phone", {
+                    required: t("checkout.phoneRequired"),
+                    pattern: {
+                      value: EGYPTIAN_MOBILE,
+                      message: t("checkout.phoneInvalid"),
+                    },
+                  })}
                 />
+                {errors.phone && (
+                  <p className="text-sm text-destructive">
+                    {errors.phone.message}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="address">{t("checkout.address")}</Label>
                 <Textarea
                   id="address"
-                  name="address"
+                  autoComplete="street-address"
                   placeholder={t("checkout.addressPlaceholder")}
-                  required
+                  aria-invalid={!!errors.address}
+                  {...register("address", {
+                    validate: (value) =>
+                      !!value.trim() || t("checkout.addressRequired"),
+                  })}
                 />
+                {errors.address && (
+                  <p className="text-sm text-destructive">
+                    {errors.address.message}
+                  </p>
+                )}
               </div>
 
               <Separator />
@@ -122,31 +172,38 @@ export default function Checkout() {
               <div className="space-y-3">
                 <Label>{t("checkout.paymentMethod")}</Label>
 
-                <RadioGroup
-                  value={paymentMethod}
-                  onValueChange={(value) =>
-                    setPaymentMethod(value as "cash" | "online")
-                  }
-                  className="grid gap-3 sm:grid-cols-2"
-                >
-                  <Label
-                    htmlFor="cash"
-                    className="flex cursor-pointer items-center gap-3 rounded-lg border p-4"
-                  >
-                    <RadioGroupItem value="cash" id="cash" />
-                    <Banknote className="h-5 w-5" />
-                    {t("checkout.cash")}
-                  </Label>
+                <Controller
+                  control={control}
+                  name="payment_method"
+                  render={({ field }) => (
+                    <RadioGroup
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      className="grid gap-3 sm:grid-cols-2"
+                    >
+                      <Label
+                        htmlFor="cash"
+                        className="flex cursor-pointer items-center gap-3 border p-4 has-data-[state=checked]:border-primary"
+                      >
+                        <RadioGroupItem value="cash" id="cash" />
+                        <Banknote className="h-5 w-5" />
+                        {t("payment.cash")}
+                      </Label>
 
-                  <Label
-                    htmlFor="online"
-                    className="flex cursor-pointer items-center gap-3 rounded-lg border p-4"
-                  >
-                    <RadioGroupItem value="online" id="online" />
-                    <CreditCard className="h-5 w-5" />
-                    {t("checkout.online")}
-                  </Label>
-                </RadioGroup>
+                      <Label
+                        htmlFor="online"
+                        className="flex cursor-not-allowed items-center gap-3 border p-4 opacity-60"
+                      >
+                        <RadioGroupItem value="online" id="online" disabled />
+                        <CreditCard className="h-5 w-5" />
+                        {t("payment.online")}
+                        <span className="ms-auto bg-muted px-2 py-0.5 text-[10px] tracking-widest uppercase">
+                          {t("checkout.onlineSoon")}
+                        </span>
+                      </Label>
+                    </RadioGroup>
+                  )}
+                />
               </div>
             </CardContent>
           </Card>
@@ -158,7 +215,7 @@ export default function Checkout() {
 
             <CardContent className="space-y-4">
               <div className="space-y-3">
-                {cart.map((item) => {
+                {availableItems.map((item) => {
                   const name = isArabic ? item.name_ar : item.name_en;
 
                   return (
@@ -170,7 +227,7 @@ export default function Checkout() {
                         {name} × {item.quantity}
                       </span>
                       <span>
-                        {item.price * item.quantity} {t("common.currency")}
+                        {formatPrice(item.price * item.quantity, i18n.language)}
                       </span>
                     </div>
                   );
@@ -186,9 +243,7 @@ export default function Checkout() {
 
               <div className="flex justify-between text-lg font-bold">
                 <span>{t("checkout.total")}</span>
-                <span>
-                  {totalPrice} {t("common.currency")}
-                </span>
+                <span>{formatPrice(totalPrice, i18n.language)}</span>
               </div>
             </CardContent>
 
@@ -199,7 +254,7 @@ export default function Checkout() {
                 className="w-full"
               >
                 {isCreatingOrder
-                  ? t("common.loading")
+                  ? t("checkout.placing")
                   : t("checkout.placeOrder")}
               </Button>
             </CardFooter>

@@ -1,3 +1,14 @@
+export const PRODUCT_CATEGORIES = [
+  "burgers",
+  "pizza",
+  "mains",
+  "sides",
+  "desserts",
+  "drinks",
+] as const;
+
+export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number];
+
 export type Product = {
   id: number;
   name_en: string;
@@ -7,5 +18,9 @@ export type Product = {
   price: number;
   image_url: string;
   is_available: boolean;
+  category: ProductCategory;
+  is_seed: boolean;
   created_at: string;
 };
+
+export type ProductFormValues = Omit<Product, "id" | "created_at" | "is_seed">;

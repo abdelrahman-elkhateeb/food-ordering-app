@@ -1,17 +1,19 @@
+import { useState } from "react";
 import { Eye, MoreHorizontal } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
@@ -21,8 +23,8 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -31,232 +33,256 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import OrderStatusBadge from "@/components/dashboard/OrderStatusBadge";
 import { useOrders } from "@/features/orders/useOrders";
 import { useUpdateOrderStatus } from "@/features/orders/useUpdateOrderStatus";
+import { formatDate, formatPrice } from "@/lib/format";
+import { ORDER_STATUSES, type OrderStatus } from "@/types/OrderTypes";
 
-function getStatusVariant(status: string) {
-  if (status === "delivered") return "default";
-  if (status === "cancelled") return "destructive";
-  return "secondary";
-}
+const ALL = "all";
 
 export default function AdminOrders() {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
+
   const { orders = [], isLoading, error } = useOrders();
-  const { changeOrderStatus, isUpdating } = useUpdateOrderStatus();
+  const { changeOrderStatus, updatingOrderId } = useUpdateOrderStatus();
 
-  if (isLoading) return <p>Loading orders...</p>;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const statusFilter = searchParams.get("status") ?? ALL;
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
 
-  if (error) return <p>Something went wrong.</p>;
+  // Look the order up on every render so live updates show in the sheet.
+  const selectedOrder = orders.find((order) => order.id === selectedOrderId);
 
-  const pendingOrders = orders.filter(
-    (order) => order.status === "pending"
-  ).length;
+  const filteredOrders =
+    statusFilter === ALL
+      ? orders
+      : orders.filter((order) => order.status === statusFilter);
 
-  const revenue = orders.reduce(
-    (sum, order) => sum + Number(order.total_price),
-    0
-  );
+  function countFor(status: OrderStatus) {
+    return orders.filter((order) => order.status === status).length;
+  }
+
+  if (error) return <p className="text-destructive">{t("common.error")}</p>;
 
   return (
     <section className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Orders</h1>
+        <h1 className="text-2xl font-bold">{t("admin.orders.title")}</h1>
         <p className="text-sm text-muted-foreground">
-          Manage customer orders and delivery status.
+          {t("admin.orders.subtitle")}
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              Total Orders
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-2xl font-bold">
-            {orders.length}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              Pending
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-2xl font-bold">
-            {pendingOrders}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">
-              Revenue
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-2xl font-bold">
-            {revenue} EGP
-          </CardContent>
-        </Card>
-      </div>
+      <Tabs
+        value={statusFilter}
+        onValueChange={(value) =>
+          setSearchParams(value === ALL ? {} : { status: value }, {
+            replace: true,
+          })
+        }
+      >
+        <TabsList className="h-auto max-w-full flex-wrap justify-start">
+          <TabsTrigger value={ALL}>
+            {t("common.all")} ({orders.length})
+          </TabsTrigger>
+          {ORDER_STATUSES.map((status) => (
+            <TabsTrigger key={status} value={status}>
+              {t(`orderStatus.${status}`)} ({countFor(status)})
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
-        </CardHeader>
-
-        <CardContent className="space-y-4">
-
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Order</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Payment</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Total</TableHead>
+                <TableHead>{t("admin.orders.order")}</TableHead>
+                <TableHead>{t("admin.orders.customer")}</TableHead>
+                <TableHead>{t("admin.orders.payment")}</TableHead>
+                <TableHead>{t("admin.orders.status")}</TableHead>
+                <TableHead>{t("admin.orders.total")}</TableHead>
                 <TableHead className="w-[80px]" />
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {orders.map((order) => (
+              {isLoading &&
+                Array.from({ length: 5 }).map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell colSpan={6}>
+                      <Skeleton className="h-10 w-full" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+
+              {filteredOrders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell>
-                    <div>
-                      <p className="font-medium">#{order.id}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(order.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
+                    <p className="font-medium">#{order.id}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(order.created_at, i18n.language)}
+                    </p>
                   </TableCell>
 
                   <TableCell>
-                    <div>
-                      <p className="font-medium">
-                        {order.customer_name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {order.phone}
-                      </p>
-                    </div>
+                    <p className="font-medium">{order.customer_name}</p>
+                    <p className="text-sm text-muted-foreground" dir="ltr">
+                      {order.phone}
+                    </p>
                   </TableCell>
 
                   <TableCell>
                     <Badge variant="outline">
-                      {order.payment_method}
+                      {t(`payment.${order.payment_method}`)}
                     </Badge>
                   </TableCell>
 
                   <TableCell>
-                    <Badge variant={getStatusVariant(order.status)}>
-                      {order.status.replaceAll("_", " ")}
-                    </Badge>
+                    <OrderStatusBadge status={order.status} />
+                  </TableCell>
+
+                  <TableCell className="font-medium">
+                    {formatPrice(order.total_price, i18n.language)}
                   </TableCell>
 
                   <TableCell>
-                    {order.total_price} EGP
-                  </TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          disabled={updatingOrderId === order.id}
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
 
-                  <TableCell>
-                    <Sheet>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          onClick={() => setSelectedOrderId(order.id)}
+                        >
+                          <Eye className="h-4 w-4" />
+                          {t("admin.orders.viewDetails")}
+                        </DropdownMenuItem>
 
-                        <DropdownMenuContent align="end">
-                          <SheetTrigger asChild>
-                            <DropdownMenuItem>
-                              <Eye className="mr-2 h-4 w-4" />
-                              View details
-                            </DropdownMenuItem>
-                          </SheetTrigger>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel>
+                          {t("admin.orders.changeStatus")}
+                        </DropdownMenuLabel>
 
-                          <DropdownMenuItem
-                            disabled={isUpdating}
-                            onClick={() =>
-                              changeOrderStatus({
-                                orderId: order.id,
-                                status: "preparing",
-                              })
-                            }
-                          >
-                            Mark preparing
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem
-                            disabled={isUpdating}
-                            onClick={() =>
-                              changeOrderStatus({
-                                orderId: order.id,
-                                status: "out_for_delivery",
-                              })
-                            }
-                          >
-                            Out for delivery
-                          </DropdownMenuItem>
-
-                          <DropdownMenuItem
-                            disabled={isUpdating}
-                            onClick={() =>
-                              changeOrderStatus({
-                                orderId: order.id,
-                                status: "delivered",
-                              })
-                            }
-                          >
-                            Mark delivered
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-
-                      <SheetContent className="sm:max-w-md">
-                        <SheetHeader>
-                          <SheetTitle>Order #{order.id}</SheetTitle>
-                          <SheetDescription>
-                            Customer and order details.
-                          </SheetDescription>
-                        </SheetHeader>
-
-                        <div className="mt-6 space-y-6">
-                          <div className="space-y-1">
-                            <p className="font-medium">
-                              {order.customer_name}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {order.phone}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {order.address}
-                            </p>
-                          </div>
-
-                          <Separator />
-
-                          <div className="flex justify-between font-bold">
-                            <span>Total</span>
-                            <span>{order.total_price} EGP</span>
-                          </div>
-                        </div>
-                      </SheetContent>
-                    </Sheet>
+                        <DropdownMenuRadioGroup
+                          value={order.status}
+                          onValueChange={(status) =>
+                            changeOrderStatus({
+                              orderId: order.id,
+                              status: status as OrderStatus,
+                            })
+                          }
+                        >
+                          {ORDER_STATUSES.map((status) => (
+                            <DropdownMenuRadioItem key={status} value={status}>
+                              {t(`orderStatus.${status}`)}
+                            </DropdownMenuRadioItem>
+                          ))}
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
 
-          {orders.length === 0 && (
+          {!isLoading && filteredOrders.length === 0 && (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              No orders found.
+              {t("admin.orders.empty")}
             </p>
           )}
         </CardContent>
       </Card>
+
+      <Sheet
+        open={!!selectedOrder}
+        onOpenChange={(open) => !open && setSelectedOrderId(null)}
+      >
+        <SheetContent
+          side={i18n.dir() === "rtl" ? "left" : "right"}
+          className="overflow-y-auto sm:max-w-md"
+        >
+          {selectedOrder && (
+            <>
+              <SheetHeader>
+                <SheetTitle>
+                  {t("admin.orders.order")} #{selectedOrder.id}
+                </SheetTitle>
+                <SheetDescription>{t("admin.orders.details")}</SheetDescription>
+              </SheetHeader>
+
+              <div className="space-y-6 px-4 pb-6">
+                <div className="flex items-center justify-between">
+                  <OrderStatusBadge status={selectedOrder.status} />
+                  <span className="text-sm text-muted-foreground">
+                    {formatDate(selectedOrder.created_at, i18n.language)}
+                  </span>
+                </div>
+
+                <div className="space-y-1">
+                  <p className="font-medium">{selectedOrder.customer_name}</p>
+                  <p className="text-sm text-muted-foreground" dir="ltr">
+                    {selectedOrder.phone}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedOrder.address}
+                  </p>
+                </div>
+
+                <Separator />
+
+                <div className="space-y-3">
+                  <p className="text-xs font-semibold tracking-widest uppercase">
+                    {t("admin.orders.items")}
+                  </p>
+
+                  {selectedOrder.order_items.map((item) => (
+                    <div key={item.id} className="flex items-center gap-3">
+                      {item.products?.image_url && (
+                        <img
+                          src={item.products.image_url}
+                          alt=""
+                          className="size-10 object-cover"
+                        />
+                      )}
+                      <span className="flex-1 text-sm">
+                        {(isArabic
+                          ? item.products?.name_ar
+                          : item.products?.name_en) ?? `#${item.product_id}`}{" "}
+                        × {item.quantity}
+                      </span>
+                      <span className="text-sm">
+                        {formatPrice(item.price * item.quantity, i18n.language)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <Separator />
+
+                <div className="flex justify-between font-bold">
+                  <span>{t("admin.orders.total")}</span>
+                  <span>
+                    {formatPrice(selectedOrder.total_price, i18n.language)}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
+        </SheetContent>
+      </Sheet>
     </section>
   );
 }

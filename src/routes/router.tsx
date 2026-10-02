@@ -1,6 +1,7 @@
 import AdminLayout from "@/layout/AdminLayout";
 import AuthLayout from "@/layout/AuthLayout";
 import ClientLayout from "@/layout/ClientLayout";
+import RootLayout from "@/layout/RootLayout";
 import AdminDashboard from "@/pages/Admin/AdminDashboard";
 import AdminOrders from "@/pages/Admin/AdminOrders";
 import AdminProducts from "@/pages/Admin/AdminProducts";
@@ -13,39 +14,41 @@ import NotFound from "@/pages/NotFound";
 import OrderConfirmed from "@/pages/OrderConfirmed";
 import Register from "@/pages/Register";
 import TrackOrder from "@/pages/TrackOrder";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter } from "react-router";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
-    element: <ClientLayout />,
+    element: <RootLayout />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "menu", element: <Menu /> },
-      { path: "checkout", element: <Checkout /> },
-      { path: "track-order", element: <TrackOrder /> },
-      { path: "cart", element: <Cart /> },
-      { path: "order-confirmed/:orderId", element: <OrderConfirmed /> },
-    ]
-  },
-  {
-    path: "/admin",
-    element: <AdminLayout />,
-    children: [
-      { index: true, element: <AdminDashboard /> },
-      { path: "products", element: <AdminProducts /> },
-      { path: "orders", element: <AdminOrders /> },
-    ]
-  },
-  {
-    element: <AuthLayout />,
-    children: [
-      { path: "/login", element: <Login /> },
-      { path: "/register", element: <Register /> },
+      {
+        path: "/",
+        element: <ClientLayout />,
+        children: [
+          { index: true, element: <Home /> },
+          { path: "menu", element: <Menu /> },
+          { path: "checkout", element: <Checkout /> },
+          { path: "track-order", element: <TrackOrder /> },
+          { path: "cart", element: <Cart /> },
+          { path: "order-confirmed/:orderId", element: <OrderConfirmed /> },
+          { path: "*", element: <NotFound /> },
+        ],
+      },
+      {
+        path: "/admin",
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          { path: "products", element: <AdminProducts /> },
+          { path: "orders", element: <AdminOrders /> },
+        ],
+      },
+      {
+        element: <AuthLayout />,
+        children: [
+          { path: "/login", element: <Login /> },
+          { path: "/register", element: <Register /> },
+        ],
+      },
     ],
   },
-  {
-    path: "*",
-    element: <NotFound />,
-  }
-])
+]);

@@ -1,9 +1,11 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   Package,
   ShoppingBag,
   Home,
+  UtensilsCrossed,
 } from "lucide-react";
 
 import {
@@ -17,23 +19,23 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-
 import { Button } from "@/components/ui/button";
 
 const navItems = [
   {
-    title: "Dashboard",
+    title: "admin.nav.dashboard",
     url: "/admin",
     icon: LayoutDashboard,
   },
   {
-    title: "Products",
+    title: "admin.nav.products",
     url: "/admin/products",
     icon: Package,
   },
   {
-    title: "Orders",
+    title: "admin.nav.orders",
     url: "/admin/orders",
     icon: ShoppingBag,
   },
@@ -41,26 +43,28 @@ const navItems = [
 
 export default function AdminSidebar() {
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+  const { setOpenMobile } = useSidebar();
 
   return (
-    <Sidebar side="left">
+    <Sidebar side={i18n.dir() === "rtl" ? "right" : "left"}>
       <SidebarHeader>
-        <div className="px-2 py-2">
-          <h2 className="text-lg font-bold">
-            Foodie Admin
-          </h2>
-
-          <p className="text-sm text-muted-foreground">
-            Manage your restaurant
-          </p>
+        <div className="flex items-center gap-3 px-2 py-2">
+          <span className="flex size-9 items-center justify-center bg-primary text-primary-foreground">
+            <UtensilsCrossed className="size-4" />
+          </span>
+          <div>
+            <h2 className="font-bold">{t("admin.sidebarTitle")}</h2>
+            <p className="text-xs text-muted-foreground">
+              {t("admin.sidebarSubtitle")}
+            </p>
+          </div>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>
-            Management
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>{t("admin.management")}</SidebarGroupLabel>
 
           <SidebarGroupContent>
             <SidebarMenu>
@@ -68,14 +72,14 @@ export default function AdminSidebar() {
                 const Icon = item.icon;
 
                 return (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton
                       asChild
                       isActive={location.pathname === item.url}
                     >
-                      <Link to={item.url}>
+                      <Link to={item.url} onClick={() => setOpenMobile(false)}>
                         <Icon />
-                        <span>{item.title}</span>
+                        <span>{t(item.title)}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -89,8 +93,8 @@ export default function AdminSidebar() {
       <SidebarFooter>
         <Button variant="outline" asChild>
           <Link to="/">
-            <Home className="mr-2 h-4 w-4" />
-            Back to website
+            <Home className="h-4 w-4" />
+            {t("admin.backToSite")}
           </Link>
         </Button>
       </SidebarFooter>

@@ -13,7 +13,6 @@ The application allows customers to browse products, place orders, track order s
 - User Registration
 - User Login
 - Secure Session Management using Supabase Auth
-- Protected User Actions
 - Logout Functionality
 
 ---
@@ -26,13 +25,15 @@ The application allows customers to browse products, place orders, track order s
 - Product images and descriptions
 - Multi-language support (English / Arabic)
 - Product availability status
+- Category filters and instant search
 
 #### Shopping Cart
 
 - Add products to cart
 - Remove products from cart
 - Increase / decrease quantity
-- Persistent client-side state using Zustand
+- Persisted across reloads (Zustand `persist`)
+- Prices re-synced with the database before checkout
 - Automatic subtotal and total calculations
 
 #### Checkout
@@ -40,7 +41,8 @@ The application allows customers to browse products, place orders, track order s
 - Customer information collection
 - Payment method selection
 - Order summary
-- Order creation workflow
+- Validated form (react-hook-form, Egyptian mobile numbers)
+- Order + items created atomically by a Postgres function that computes prices server-side, so totals can't be tampered with from the browser
 
 #### Order Tracking
 
@@ -53,7 +55,7 @@ Supported statuses:
 - Out For Delivery
 - Delivered
 
-Includes a visual order progress tracker that updates automatically based on the current order status.
+Includes a visual order progress tracker that updates **live via Supabase Realtime** when the restaurant changes the status, and shareable tracking links (`/track-order?id=12`).
 
 ---
 
@@ -77,7 +79,12 @@ Built using i18next.
 
 ### 🛠 Admin Dashboard
 
-A dedicated dashboard for restaurant management.
+A dedicated dashboard for restaurant management, **open to everyone as a public demo**.
+
+- Stats: revenue, orders today, average order, orders by status, 7-day activity, top dishes
+- Live orders feed (Realtime) with status filters
+- Demo menu items are protected by Row Level Security; visitors can create, edit and delete their own products
+- Admins (role stored in a `profiles` table) can reset all demo data
 
 #### Products Management
 
@@ -312,6 +319,17 @@ npm install
 
 # Start development server
 npm run dev
+```
+
+### Database setup
+
+Run [`supabase/migrations/20261002_demo_hardening.sql`](supabase/migrations/20261002_demo_hardening.sql) once in the Supabase SQL editor. It adds categories, roles, RLS policies, the `place_order` / `update_order_status` / `reset_demo_data` functions, enables Realtime on `orders`, and seeds a demo menu if the products table is empty.
+
+Then make yourself admin:
+
+```sql
+update public.profiles set role = 'admin'
+where id = (select id from auth.users where email = 'you@example.com');
 ```
 
 ### Environment Variables

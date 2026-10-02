@@ -1,0 +1,350 @@
+const en = {
+  brand: "Foodie",
+
+  nav: {
+    home: "Home",
+    menu: "Menu",
+    trackOrder: "Track Order",
+    cart: "Cart",
+    login: "Login",
+    logout: "Logout",
+    dashboard: "Dashboard",
+    openMenu: "Open menu",
+    switchLanguage: "العربية",
+    toggleTheme: "Toggle theme",
+  },
+
+  common: {
+    loading: "Loading...",
+    error: "Something went wrong.",
+    unavailable: "Unavailable",
+    cancel: "Cancel",
+    all: "All",
+    demo: "Demo",
+  },
+
+  payment: {
+    cash: "Cash",
+    online: "Online",
+  },
+
+  categories: {
+    burgers: "Burgers",
+    pizza: "Pizza",
+    mains: "Mains",
+    sides: "Sides",
+    desserts: "Desserts",
+    drinks: "Drinks",
+  },
+
+  home: {
+    hero: {
+      badge: "Hot & fresh, delivered to your door",
+      title: "Your favorite meals,",
+      highlight: "one tap away",
+      subtitle:
+        "Browse the menu, order in seconds and watch your food move from our kitchen to your door in real time.",
+      orderNow: "Order now",
+      track: "Track an order",
+    },
+    featured: {
+      title: "Popular right now",
+      subtitle: "Hand-picked favorites our customers keep coming back for.",
+      viewAll: "View full menu",
+    },
+    how: {
+      title: "How it works",
+      subtitle: "From craving to doorstep in three simple steps.",
+      browse: {
+        title: "Pick your meal",
+        description: "Explore the menu by category or search for a dish.",
+      },
+      order: {
+        title: "Place your order",
+        description: "Add your address and pay cash on delivery.",
+      },
+      track: {
+        title: "Track it live",
+        description: "Follow every step, from the kitchen to your door.",
+      },
+    },
+    why: {
+      title: "Why Foodie?",
+      fresh: {
+        title: "Made fresh",
+        description: "Every order is prepared the moment you place it.",
+      },
+      live: {
+        title: "Live tracking",
+        description: "Status updates appear instantly, no refreshing needed.",
+      },
+      payment: {
+        title: "Pay your way",
+        description: "Cash on delivery today, online payments coming soon.",
+      },
+      language: {
+        title: "Arabic & English",
+        description: "The whole experience in your language, RTL included.",
+      },
+    },
+    cta: {
+      title: "Hungry yet?",
+      subtitle: "Your next meal is a few clicks away.",
+      button: "Browse the menu",
+    },
+  },
+
+  footer: {
+    tagline: "A full-stack food ordering demo built with React & Supabase.",
+    explore: "Explore",
+    demoNote:
+      "This is a portfolio demo. Orders are not real and are visible on the public dashboard.",
+    rights: "All rights reserved.",
+  },
+
+  menu: {
+    title: "Our menu",
+    subtitle: "Freshly prepared, delivered hot.",
+    search: "Search dishes...",
+    noResults: "No dishes match your search.",
+    addToCart: "Add to Cart",
+    added: "{{name}} added to cart",
+  },
+
+  cart: {
+    title: "Your Cart",
+    empty: "Your cart is empty",
+    emptyDescription: "Add some delicious meals from the menu.",
+    browseMenu: "Browse Menu",
+    clear: "Clear Cart",
+    itemsCount_one: "{{count}} item",
+    itemsCount_other: "{{count}} items",
+    items: "Items",
+    subtotal: "Subtotal",
+    total: "Total",
+    orderSummary: "Order Summary",
+    checkout: "Proceed to Checkout",
+    unavailableNotice:
+      "Some items are no longer available and won't be included in your order.",
+    remove: "Remove",
+    increase: "Increase quantity",
+    decrease: "Decrease quantity",
+  },
+
+  checkout: {
+    title: "Checkout",
+    deliveryDetails: "Delivery Details",
+    fullName: "Full Name",
+    fullNamePlaceholder: "Ahmed Mohamed",
+    fullNameRequired: "Please enter your name",
+    phoneNumber: "Phone Number",
+    phonePlaceholder: "01012345678",
+    phoneRequired: "Please enter your phone number",
+    phoneInvalid: "Enter a valid Egyptian mobile number (e.g. 01012345678)",
+    address: "Address",
+    addressPlaceholder: "Street, building, apartment, city",
+    addressRequired: "Please enter your address",
+    paymentMethod: "Payment Method",
+    onlineSoon: "Soon",
+    orderSummary: "Order Summary",
+    items: "Items",
+    total: "Total",
+    placeOrder: "Place Order",
+    placing: "Placing order...",
+    backToMenu: "Back to Menu",
+    demoNotice:
+      "Demo app: please don't enter real personal details. Orders are visible on the public dashboard.",
+  },
+
+  orderConfirmed: {
+    title: "Order Confirmed",
+    description: "Your order has been placed successfully.",
+    orderId: "Order ID",
+    track: "Track Order",
+    backToMenu: "Back to Menu",
+  },
+
+  trackOrder: {
+    title: "Track your order",
+    description: "Enter your order ID to check the latest status.",
+    orderId: "Order ID",
+    placeholder: "Example: 12",
+    action: "Track",
+    loading: "Loading order...",
+    notFound: "No order found with this ID.",
+    customer: "Customer",
+    order: "Order",
+    placedAt: "Placed",
+    items: "Items",
+    total: "Total",
+    live: "Live",
+  },
+
+  orderStatus: {
+    pending: "Pending",
+    preparing: "Preparing",
+    out_for_delivery: "Out for delivery",
+    delivered: "Delivered",
+  },
+
+  orderSteps: {
+    pending: {
+      title: "Order received",
+      description: "We received your order successfully.",
+    },
+    preparing: {
+      title: "Preparing",
+      description: "Your meal is being prepared now.",
+    },
+    out_for_delivery: {
+      title: "Out for delivery",
+      description: "Your order is on the way.",
+    },
+    delivered: {
+      title: "Delivered",
+      description: "Enjoy your meal.",
+    },
+  },
+
+  auth: {
+    loginTitle: "Welcome back",
+    loginSubtitle: "Login with your account",
+    registerTitle: "Create an account",
+    registerSubtitle: "Register to start ordering delicious food",
+    fullName: "Full Name",
+    fullNamePlaceholder: "Ahmed Mohamed",
+    email: "Email",
+    password: "Password",
+    confirmPassword: "Confirm Password",
+    login: "Login",
+    loggingIn: "Logging in...",
+    createAccount: "Create Account",
+    creatingAccount: "Creating account...",
+    noAccount: "Don't have an account?",
+    signUp: "Sign up",
+    haveAccount: "Already have an account?",
+    fullNameRequired: "Full name is required",
+    emailRequired: "Email is required",
+    passwordRequired: "Password is required",
+    passwordMin: "Password must be at least 6 characters",
+    confirmRequired: "Please confirm your password",
+    passwordMismatch: "Passwords do not match",
+    welcomeBack: "Welcome back!",
+    accountCreated: "Your account is ready!",
+    confirmEmail: "Check your inbox to confirm your email, then log in.",
+  },
+
+  notFound: {
+    description: "The page you are looking for does not exist.",
+    backHome: "Back Home",
+  },
+
+  errors: {
+    PRODUCT_IN_ORDERS:
+      "This product is part of existing orders. Mark it as unavailable instead.",
+    PRODUCT_PROTECTED:
+      "This is a demo product and is protected. Create your own product to edit or delete it.",
+  },
+
+  admin: {
+    title: "Admin Dashboard",
+    subtitle: "Overview and management",
+    sidebarTitle: "Foodie Admin",
+    sidebarSubtitle: "Manage your restaurant",
+    management: "Management",
+    nav: {
+      dashboard: "Dashboard",
+      products: "Products",
+      orders: "Orders",
+    },
+    backToSite: "Back to website",
+    demoBanner:
+      "Public demo: feel free to add products and move orders through their statuses. Demo menu items are protected.",
+    resetDemo: "Reset demo data",
+    resetTitle: "Reset demo data?",
+    resetDescription:
+      "This deletes all orders and every product created by visitors. The original demo menu is kept.",
+    resetConfirm: "Reset",
+    resetDone: "Demo data has been reset.",
+
+    stats: {
+      revenue: "Revenue",
+      revenueHint: "From delivered orders",
+      totalOrders: "Total orders",
+      todayHint: "{{count}} today",
+      avgOrder: "Average order",
+      avgOrderHint: "Across all orders",
+      last7Days: "Orders, last 7 days",
+      active: "Active orders",
+      activeHint: "Pending, preparing or on the way",
+      byStatus: "Orders by status",
+      topDishes: "Top dishes",
+      sold: "{{count}} sold",
+      recentOrders: "Recent orders",
+      viewAll: "View all",
+      noData: "No orders yet. Place one from the menu to see stats here.",
+    },
+
+    products: {
+      title: "Products",
+      subtitle: "Manage menu items, prices, and availability.",
+      tableTitle: "Menu Products",
+      add: "Add Product",
+      addDescription: "Create a new menu item for your food app.",
+      editTitle: "Edit Product",
+      editDescription: "Update product information.",
+      product: "Product",
+      price: "Price",
+      category: "Category",
+      status: "Status",
+      available: "Available",
+      unavailable: "Unavailable",
+      protected: "Demo item",
+      protectedHint: "Demo items can only be changed by the admin.",
+      actions: "Actions",
+      edit: "Edit",
+      delete: "Delete",
+      deleteTitle: "Delete \"{{name}}\"?",
+      deleteDescription: "This product will be removed from the menu permanently.",
+      created: "Product created",
+      updated: "Product updated",
+      deleted: "Product deleted",
+      empty: "No products yet.",
+      form: {
+        nameEn: "Name (English)",
+        nameAr: "Name (Arabic)",
+        descriptionEn: "Description (English)",
+        descriptionAr: "Description (Arabic)",
+        price: "Price (EGP)",
+        imageUrl: "Image URL",
+        category: "Category",
+        available: "Available",
+        availableHint: "Allow customers to add this product to cart.",
+        required: "This field is required",
+        priceMin: "Price must be greater than 0",
+        create: "Create Product",
+        creating: "Creating...",
+        update: "Update Product",
+        updating: "Updating...",
+      },
+    },
+
+    orders: {
+      title: "Orders",
+      subtitle: "Manage customer orders and delivery status. Updates appear live.",
+      order: "Order",
+      customer: "Customer",
+      payment: "Payment",
+      status: "Status",
+      total: "Total",
+      empty: "No orders found.",
+      viewDetails: "View details",
+      changeStatus: "Change status",
+      details: "Customer and order details.",
+      items: "Items",
+      statusUpdated: "Order #{{id}} is now {{status}}",
+    },
+  },
+};
+
+export default en;

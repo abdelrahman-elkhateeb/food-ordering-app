@@ -1,84 +1,116 @@
-import { Globe, LogOut, ShoppingCart, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { LogOut, Menu, ShoppingCart, User, UtensilsCrossed } from "lucide-react";
+import { Link, NavLink } from "react-router";
 import { useTranslation } from "react-i18next";
-
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from "@/components/ui/navigation-menu";
+import { useState } from "react";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import LanguageToggle from "@/components/LanguageToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useUser } from "@/features/users/useUser";
 import { useLogout } from "@/features/users/useLogout";
 import { useCartStore } from "@/store/cartStore";
+import { cn } from "@/lib/utils";
+
+const links = [
+  { to: "/", label: "nav.home", end: true },
+  { to: "/menu", label: "nav.menu" },
+  { to: "/track-order", label: "nav.trackOrder" },
+  { to: "/admin", label: "nav.dashboard", demo: true },
+];
 
 export default function Navbar() {
   const totalItems = useCartStore((state) => state.getTotalItems());
   const { user } = useUser();
   const { logoutUser } = useLogout();
   const { t, i18n } = useTranslation();
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  const isArabic = i18n.language === "ar";
-
-  function toggleLanguage() {
-    i18n.changeLanguage(isArabic ? "en" : "ar");
-  }
+  const navLinks = links.map((link) => (
+    <NavLink
+      key={link.to}
+      to={link.to}
+      end={link.end}
+      onClick={() => setIsMobileOpen(false)}
+      className={({ isActive }) =>
+        cn(
+          "flex items-center gap-2 px-3 py-2 text-xs font-semibold tracking-widest uppercase transition-colors hover:text-foreground",
+          isActive ? "text-foreground" : "text-muted-foreground"
+        )
+      }
+    >
+      {t(link.label)}
+      {link.demo && (
+        <span className="bg-primary px-1.5 py-0.5 text-[10px] text-primary-foreground">
+          {t("common.demo")}
+        </span>
+      )}
+    </NavLink>
+  ));
 
   return (
-    <header className="border-b bg-background">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="text-xl font-bold tracking-tight">
-          {t("brand")}
-        </Link>
-
-        <NavigationMenu>
-          <NavigationMenuList className="gap-2">
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link
-                  to="/menu"
-                  className="rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
-                >
-                  {t("nav.menu")}
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link
-                  to="/track-order"
-                  className="rounded-md px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
-                >
-                  {t("nav.trackOrder")}
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
-
+    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur">
+      <div className="container mx-auto flex h-16 items-center justify-between gap-4 px-4">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={toggleLanguage}>
-            <Globe className="h-5 w-5" />
-            <span className="sr-only">
-              {isArabic ? "Switch to English" : "Switch to Arabic"}
+          <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">{t("nav.openMenu")}</span>
+              </Button>
+            </SheetTrigger>
+
+            <SheetContent side={i18n.dir() === "rtl" ? "right" : "left"}>
+              <SheetHeader>
+                <SheetTitle>{t("brand")}</SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col gap-1 px-4">{navLinks}</nav>
+              <div className="px-4">
+                <LanguageToggle />
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-xl font-black tracking-tight"
+          >
+            <span className="flex size-8 items-center justify-center bg-primary text-primary-foreground">
+              <UtensilsCrossed className="size-4" />
             </span>
-          </Button>
+            {t("brand")}
+          </Link>
+        </div>
+
+        <nav className="hidden items-center gap-1 md:flex">{navLinks}</nav>
+
+        <div className="flex items-center gap-1">
+          <div className="hidden md:block">
+            <LanguageToggle />
+          </div>
+
+          <ThemeToggle />
 
           <Button variant="ghost" size="icon" asChild className="relative">
             <Link to="/cart">
               <ShoppingCart className="h-5 w-5" />
+              <span className="sr-only">{t("nav.cart")}</span>
               {totalItems > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs font-bold text-primary-foreground">
+                <span className="absolute -end-1 -top-1 flex h-5 min-w-5 items-center justify-center bg-primary px-1 text-xs font-bold text-primary-foreground">
                   {totalItems}
                 </span>
               )}
@@ -94,17 +126,21 @@ export default function Navbar() {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end">
+                <DropdownMenuLabel className="max-w-56 truncate">
+                  {user.user_metadata?.full_name ?? user.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => logoutUser()}
                   className="text-destructive"
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
+                  <LogOut className="h-4 w-4" />
                   {t("nav.logout")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild>
+            <Button asChild size="sm">
               <Link to="/login">{t("nav.login")}</Link>
             </Button>
           )}
