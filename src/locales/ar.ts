@@ -139,6 +139,7 @@ const ar: DeepStringRecord<typeof en> & {
     total: "الإجمالي",
     orderSummary: "ملخص الطلب",
     checkout: "إتمام الطلب",
+    loginToCheckout: "سجّل الدخول لإتمام الطلب",
     unavailableNotice: "بعض المنتجات لم تعد متاحة ولن تُضاف إلى طلبك.",
     remove: "حذف",
     increase: "زيادة الكمية",
@@ -244,6 +245,7 @@ const ar: DeepStringRecord<typeof en> & {
     confirmRequired: "من فضلك أكّد كلمة المرور",
     passwordMismatch: "كلمتا المرور غير متطابقتين",
     welcomeBack: "أهلًا بعودتك!",
+    loginToOrder: "من فضلك سجّل الدخول أو أنشئ حسابًا لإتمام طلبك. سلتك محفوظة.",
     accountCreated: "تم إنشاء حسابك!",
     confirmEmail: "راجع بريدك لتأكيد الحساب ثم سجّل الدخول.",
   },
@@ -254,8 +256,6 @@ const ar: DeepStringRecord<typeof en> & {
   },
 
   errors: {
-    PRODUCT_IN_ORDERS:
-      "هذا المنتج موجود في طلبات سابقة. اجعله غير متاح بدلًا من حذفه.",
     PRODUCT_PROTECTED:
       "هذا منتج تجريبي محمي. أنشئ منتجك الخاص لتعديله أو حذفه.",
   },
@@ -274,6 +274,8 @@ const ar: DeepStringRecord<typeof en> & {
     backToSite: "العودة للموقع",
     demoBanner:
       "نسخة تجريبية عامة: أضف منتجات وحرّك الطلبات بين حالاتها بحرية. منتجات القائمة الأصلية محمية.",
+    roleAdmin: "مسؤول",
+    roleVisitor: "زائر (المنتجات التجريبية للقراءة فقط)",
     resetDemo: "إعادة ضبط البيانات",
     resetTitle: "إعادة ضبط البيانات التجريبية؟",
     resetDescription:
@@ -319,10 +321,12 @@ const ar: DeepStringRecord<typeof en> & {
       edit: "تعديل",
       delete: "حذف",
       deleteTitle: "حذف \"{{name}}\"؟",
-      deleteDescription: "سيتم حذف هذا المنتج من القائمة نهائيًا.",
+      deleteDescription:
+        "سيتم حذفه من القائمة. إذا كان ضمن طلبات سابقة فسيتم أرشفته بدلًا من ذلك لتحتفظ الطلبات باسمه وصورته.",
       created: "تم إنشاء المنتج",
       updated: "تم تحديث المنتج",
       deleted: "تم حذف المنتج",
+      archived: "تمت أرشفة المنتج. الطلبات السابقة ما زالت تعرضه.",
       empty: "لا توجد منتجات بعد.",
       form: {
         nameEn: "الاسم (إنجليزي)",

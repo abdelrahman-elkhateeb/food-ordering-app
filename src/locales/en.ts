@@ -124,6 +124,7 @@ const en = {
     total: "Total",
     orderSummary: "Order Summary",
     checkout: "Proceed to Checkout",
+    loginToCheckout: "Log in to checkout",
     unavailableNotice:
       "Some items are no longer available and won't be included in your order.",
     remove: "Remove",
@@ -230,6 +231,7 @@ const en = {
     confirmRequired: "Please confirm your password",
     passwordMismatch: "Passwords do not match",
     welcomeBack: "Welcome back!",
+    loginToOrder: "Please log in or create an account to place your order. Your cart is saved.",
     accountCreated: "Your account is ready!",
     confirmEmail: "Check your inbox to confirm your email, then log in.",
   },
@@ -240,8 +242,6 @@ const en = {
   },
 
   errors: {
-    PRODUCT_IN_ORDERS:
-      "This product is part of existing orders. Mark it as unavailable instead.",
     PRODUCT_PROTECTED:
       "This is a demo product and is protected. Create your own product to edit or delete it.",
   },
@@ -260,6 +260,8 @@ const en = {
     backToSite: "Back to website",
     demoBanner:
       "Public demo: feel free to add products and move orders through their statuses. Demo menu items are protected.",
+    roleAdmin: "Admin",
+    roleVisitor: "Visitor (read-only demo items)",
     resetDemo: "Reset demo data",
     resetTitle: "Reset demo data?",
     resetDescription:
@@ -305,10 +307,12 @@ const en = {
       edit: "Edit",
       delete: "Delete",
       deleteTitle: "Delete \"{{name}}\"?",
-      deleteDescription: "This product will be removed from the menu permanently.",
+      deleteDescription:
+        "It will be removed from the menu. If it is part of past orders it is archived instead, so those orders keep its name and image.",
       created: "Product created",
       updated: "Product updated",
       deleted: "Product deleted",
+      archived: "Product archived. Past orders still show it.",
       empty: "No products yet.",
       form: {
         nameEn: "Name (English)",

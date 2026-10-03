@@ -1,3 +1,4 @@
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import AdminLayout from "@/layout/AdminLayout";
 import AuthLayout from "@/layout/AuthLayout";
 import ClientLayout from "@/layout/ClientLayout";
@@ -26,7 +27,14 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <Home /> },
           { path: "menu", element: <Menu /> },
-          { path: "checkout", element: <Checkout /> },
+          {
+            path: "checkout",
+            element: (
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
+            ),
+          },
           { path: "track-order", element: <TrackOrder /> },
           { path: "cart", element: <Cart /> },
           { path: "order-confirmed/:orderId", element: <OrderConfirmed /> },

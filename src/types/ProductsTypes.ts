@@ -20,7 +20,11 @@ export type Product = {
   is_available: boolean;
   category: ProductCategory;
   is_seed: boolean;
+  archived_at: string | null;
   created_at: string;
 };
 
-export type ProductFormValues = Omit<Product, "id" | "created_at" | "is_seed">;
+export type ProductFormValues = Omit<
+  Product,
+  "id" | "created_at" | "is_seed" | "archived_at"
+>;

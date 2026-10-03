@@ -1,6 +1,8 @@
 import { Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
-import { Info } from "lucide-react";
+import { Info, ShieldCheck } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 import {
   SidebarInset,
@@ -16,7 +18,7 @@ import { useUser } from "@/features/users/useUser";
 
 export default function AdminLayout() {
   const { t } = useTranslation();
-  const { isAdmin } = useUser();
+  const { user, isAdmin } = useUser();
 
   return (
     <SidebarProvider>
@@ -35,6 +37,20 @@ export default function AdminLayout() {
             </p>
           </div>
 
+          {user && (
+            <span
+              className={cn(
+                "hidden max-w-48 items-center gap-1.5 border px-2 py-1 text-[11px] font-semibold tracking-wider uppercase sm:inline-flex",
+                isAdmin && "border-primary bg-primary text-primary-foreground"
+              )}
+              title={user.email}
+            >
+              <ShieldCheck className="size-3.5 shrink-0" />
+              <span className="truncate">
+                {isAdmin ? t("admin.roleAdmin") : t("admin.roleVisitor")}
+              </span>
+            </span>
+          )}
           {isAdmin && <ResetDemoButton />}
           <LanguageToggle />
           <ThemeToggle />

@@ -4,10 +4,13 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+import { useRedirectAfterAuth } from "@/features/users/useRedirectAfterAuth";
+
 export function useRegister() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const redirectTo = useRedirectAfterAuth();
 
   const { mutate: signupUser, isPending: isLoading, error } = useMutation({
     mutationFn: signup,
@@ -15,13 +18,13 @@ export function useRegister() {
       // With email confirmation enabled Supabase returns no session yet.
       if (!session) {
         toast.success(t("auth.confirmEmail"));
-        navigate("/login");
+        navigate("/login", { state: { from: redirectTo } });
         return;
       }
 
       queryClient.setQueryData(["user"], user);
       toast.success(t("auth.accountCreated"));
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     },
     onError: (err) => {
       toast.error(err.message);

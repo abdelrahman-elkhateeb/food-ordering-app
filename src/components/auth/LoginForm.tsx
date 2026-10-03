@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useLogin } from "@/features/users/useLogin";
 import { cn } from "@/lib/utils";
 import type { LoginCredentials } from "@/types/LoginCredentials";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
@@ -26,6 +26,8 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const { loginUser, isPending } = useLogin();
   const { t } = useTranslation();
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from;
 
   const {
     register,
@@ -43,6 +45,11 @@ export function LoginForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">{t("auth.loginTitle")}</CardTitle>
           <CardDescription>{t("auth.loginSubtitle")}</CardDescription>
+          {from === "/checkout" && (
+            <p className="mt-2 border-s-2 border-primary bg-primary/10 p-2 text-start text-sm">
+              {t("auth.loginToOrder")}
+            </p>
+          )}
         </CardHeader>
 
         <CardContent>
@@ -94,7 +101,7 @@ export function LoginForm({
 
                 <FieldDescription className="text-center">
                   {t("auth.noAccount")}{" "}
-                  <Link to="/register">{t("auth.signUp")}</Link>
+                  <Link to="/register" state={location.state}>{t("auth.signUp")}</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

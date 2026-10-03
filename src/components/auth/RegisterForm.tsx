@@ -17,7 +17,7 @@ import { useRegister } from "@/features/users/useRegister";
 import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 type RegisterFormValues = {
   email: string;
@@ -32,6 +32,7 @@ export function RegisterForm({
 }: React.ComponentProps<"div">) {
   const { signupUser, isLoading } = useRegister();
   const { t } = useTranslation();
+  const location = useLocation();
 
   const {
     register,
@@ -156,6 +157,7 @@ export function RegisterForm({
                   {t("auth.haveAccount")}{" "}
                   <Link
                     to="/login"
+                    state={location.state}
                     className="font-medium underline underline-offset-4"
                   >
                     {t("auth.login")}

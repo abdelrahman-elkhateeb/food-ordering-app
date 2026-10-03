@@ -1,13 +1,11 @@
 import { supabase } from "@/lib/supabase";
 import type { Product, ProductFormValues } from "@/types/ProductsTypes";
 
-// Postgres foreign key violation: the product is referenced by an order.
-const FOREIGN_KEY_VIOLATION = "23503";
-
 export async function getProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from("products")
     .select("*")
+    .is("archived_at", null)
     .order("id");
 
   if (error) throw new Error(error.message);
@@ -15,21 +13,18 @@ export async function getProducts(): Promise<Product[]> {
   return data;
 }
 
-export async function deleteProduct(productId: number) {
-  // .select() makes RLS-blocked deletes visible: they return 0 rows, no error.
-  const { data, error } = await supabase
-    .from("products")
-    .delete()
-    .eq("id", productId)
-    .select("id");
-
-  if (error?.code === FOREIGN_KEY_VIOLATION) {
-    throw new Error("PRODUCT_IN_ORDERS");
-  }
+// Products that appear in past orders are archived instead of deleted so order
+// history keeps their name and image (see delete_product in supabase/migrations).
+export async function deleteProduct(
+  productId: number
+): Promise<"deleted" | "archived"> {
+  const { data, error } = await supabase.rpc("delete_product", {
+    p_product_id: productId,
+  });
 
   if (error) throw new Error(error.message);
 
-  if (data.length === 0) throw new Error("PRODUCT_PROTECTED");
+  return data;
 }
 
 export async function createProduct(

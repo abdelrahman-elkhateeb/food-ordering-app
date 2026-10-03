@@ -325,6 +325,11 @@ npm run dev
 
 Run [`supabase/migrations/20261002_demo_hardening.sql`](supabase/migrations/20261002_demo_hardening.sql) once in the Supabase SQL editor. It adds categories, roles, RLS policies, the `place_order` / `update_order_status` / `reset_demo_data` functions, enables Realtime on `orders`, and seeds a demo menu if the products table is empty.
 
+Then run the follow-up migrations in the same folder, in order:
+
+- `20261003_require_login_for_orders.sql`: only logged-in users can place orders
+- `20261003_archive_products.sql`: deleting a product that's in past orders archives it instead, so order history stays intact
+
 Then make yourself admin:
 
 ```sql

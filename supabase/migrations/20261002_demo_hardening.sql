@@ -152,11 +152,12 @@ update public.products
 set
   is_seed = true,
   category = case
-    when name_en ~* 'burger' then 'burgers'
-    when name_en ~* 'pizza' then 'pizza'
-    when name_en ~* '(cola|pepsi|juice|water|drink|tea|coffee|lemon|soda|shake|smoothie)' then 'drinks'
-    when name_en ~* '(cake|ice cream|dessert|brownie|kunafa|konafa|basbousa|cookie|waffle|pudding|donut)' then 'desserts'
-    when name_en ~* '(fries|salad|rings|soup|wings|nuggets|bread|dip)' then 'sides'
+    -- \m / \M are word boundaries, so "Chocolate" doesn't match "cola".
+    when name_en ~* '\mburgers?\M' then 'burgers'
+    when name_en ~* '\mpizzas?\M' then 'pizza'
+    when name_en ~* '\m(cakes?|ice cream|desserts?|brownies?|kunafa|konafa|basbousa|cookies?|waffles?|puddings?|donuts?)\M' then 'desserts'
+    when name_en ~* '\m(cola|pepsi|juices?|water|drinks?|tea|coffee|lemonade|soda|shakes?|smoothies?)\M' then 'drinks'
+    when name_en ~* '\m(fries|salads?|rings|soups?|wings|nuggets|bread|dips?)\M' then 'sides'
     else 'mains'
   end
 where not exists (select 1 from public.products p2 where p2.is_seed); -- first run only

@@ -4,10 +4,13 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
+import { useRedirectAfterAuth } from "@/features/users/useRedirectAfterAuth";
+
 export function useLogin() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const redirectTo = useRedirectAfterAuth();
 
   const {
     mutate: loginUser,
@@ -18,7 +21,7 @@ export function useLogin() {
     onSuccess: ({ user }) => {
       queryClient.setQueryData(["user"], user);
       toast.success(t("auth.welcomeBack"));
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     },
     onError: (err) => {
       toast.error(err.message);

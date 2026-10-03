@@ -52,8 +52,11 @@ export async function getIsAdmin(userId: string) {
     .eq("id", userId)
     .maybeSingle();
 
-  // Before the migration runs there is no profiles table: treat as non-admin.
-  if (error) return false;
+  if (error) {
+    // Surface the reason instead of silently treating the user as a visitor.
+    console.error("Could not load profile role:", error.message);
+    return false;
+  }
 
   return data?.role === "admin";
 }

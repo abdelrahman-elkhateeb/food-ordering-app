@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useCartItems } from "@/features/cart/useCartItems";
+import { useUser } from "@/features/users/useUser";
 import { formatPrice } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/store/cartStore";
@@ -26,6 +27,7 @@ export default function Cart() {
   const clearCart = useCartStore((state) => state.clearCart);
   const { items, hasUnavailableItems, totalItems, totalPrice } =
     useCartItems();
+  const { user } = useUser();
 
   if (items.length === 0) {
     return (
@@ -160,7 +162,13 @@ export default function Cart() {
 
           <CardFooter>
             <Button className="w-full" asChild>
-              <Link to="/checkout">{t("cart.checkout")}</Link>
+              {user ? (
+                <Link to="/checkout">{t("cart.checkout")}</Link>
+              ) : (
+                <Link to="/login" state={{ from: "/checkout" }}>
+                  {t("cart.loginToCheckout")}
+                </Link>
+              )}
             </Button>
           </CardFooter>
         </Card>

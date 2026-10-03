@@ -9,11 +9,15 @@ export function useDeleteProduct() {
 
   const { isPending: isDeleting, mutate: deleteProduct } = useMutation({
     mutationFn: deleteProductApi,
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({
         queryKey: ["products"],
       });
-      toast.success(t("admin.products.deleted"));
+      toast.success(
+        result === "archived"
+          ? t("admin.products.archived")
+          : t("admin.products.deleted")
+      );
     },
     onError: (err) => {
       toast.error(t(`errors.${err.message}`, { defaultValue: err.message }));
