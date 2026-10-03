@@ -33,7 +33,13 @@ export function LoginForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginCredentials>();
+  } = useForm<LoginCredentials>({
+    // Demo admin account, pre-filled so portfolio visitors can log in in one click.
+    defaultValues: {
+      email: "admin@gmail.com",
+      password: "12345678",
+    },
+  });
 
   function onSubmit(data: LoginCredentials) {
     loginUser(data);
